@@ -47,11 +47,11 @@ sudo wget curl ethtool iptraf-ng traceroute telnet mariadb-server pwgen \
 arping dnsutils dos2unix ethtool sudo iptables postfix iptables-persistent \
 build-essential rsyslog gnupg2 zip rar unrar catdoc unzip tar imagemagick ftp \
 poppler-utils tnef whois rsync automysqlbackup apache2 imagemagick cifs-utils \
-libnet-dns-perl libmailtools-perl php-mail-mime libapache2-mod-php \
-php-gd php-imagick php-imap php-intl php-ldap php-mailparse php-memcached php-mysql \
-php-zip php php-apcu php-bcmath php-curl php-gd php-igbinary 7zip \
-php-imagick php-imap php-intl php-ldap php-mailparse php-memcached \
-php-msgpack php-mysql php-zip php-pear
+libnet-dns-perl libmailtools-perl php-mail-mime libapache2-mod-php php-common php-redis \
+php-gd php-imagick php-imap php-intl php-ldap php-mailparse php-memcached php-cli php-mysql \
+php-zip php php-apcu php-bcmath php-curl php-gd php-igbinary 7zip php-mbstring \
+php-imagick php-imap php-intl php-xml php-ldap php-mailparse php-memcached \
+php-msgpack php-mysql php-zip php-pear php-fpm php-soap
 ## -x option added to allow in LXC --so that it does not update system clock as it job of host pc.
 ##echo 'DAEMON_OPTS="-F 1 -x "' >  /etc/default/chrony
 systemctl restart chrony
