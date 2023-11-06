@@ -39,9 +39,9 @@ DEBIAN_FRONTEND=noninteractive
 ## few tools need for basic with email 
 ## install insstead of systemd-timesyncd for better time sync
 apt -y install vim chrony openssh-server screen net-tools git mc postfix sendemail  \
-sudo wget curl ethtool iptraf-ng traceroute telnet mariadb-server pwgen \
-arping dnsutils dos2unix ethtool sudo iptables postfix iptables-persistent \
-build-essential rsyslog gnupg2 zip rar unrar catdoc unzip tar imagemagick ftp \
+sudo wget curl ethtool iptraf-ng traceroute telnet mariadb-server pwgen certbot \
+arping dnsutils dos2unix ethtool sudo iptables postfix iptables-persistent python3-certbot \
+build-essential rsyslog gnupg2 zip rar unrar catdoc unzip tar imagemagick ftp python3-certbot-apache \
 poppler-utils tnef whois rsync automysqlbackup apache2 imagemagick cifs-utils \
 libnet-dns-perl libmailtools-perl php-mail-mime libapache2-mod-php php-common php-redis \
 php-gd php-imagick php-imap php-intl php-ldap php-mailparse php-memcached php-cli php-mysql \
@@ -73,7 +73,8 @@ echo "export LC_ALL=en_US.UTF-8" >> /etc/bash.bashrc
 sed -i "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config
 #sed -i "s/#Port 22/Port 7722/g" /etc/ssh/sshd_config
 systemctl restart ssh
-
+## htaccess to allow
+sed -i "s/AllowOverride None/AllowOverride All/g" /etc/apache2/apache2.conf
 
 a2enmod actions > /dev/null 2>&1
 a2enmod proxy_fcgi > /dev/null 2>&1
