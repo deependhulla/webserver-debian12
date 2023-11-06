@@ -28,6 +28,7 @@ apt update
 apt -y upgrade
 apt -y dist-upgrade
 
+echo `hostname -f` > /etc/mailname
 CFG_HOSTNAME_FQDN=`hostname -f`
 echo "postfix postfix/main_mailer_type select Internet Site" | debconf-set-selections
 echo "postfix postfix/mailname string $CFG_HOSTNAME_FQDN" | debconf-set-selections
@@ -51,6 +52,55 @@ php-msgpack php-mysql php-zip php-pear php-fpm php-soap
 ## -x option added to allow in LXC --so that it does not update system clock as it job of host pc.
 ##echo 'DAEMON_OPTS="-F 1 -x "' >  /etc/default/chrony
 systemctl restart chrony
+
+
+
+/bin/cp -pR /etc/rc.local /usr/local/src/old-rc.local-`date +%s` 2>/dev/null
+## create with default IPV6 disabled 
+touch /etc/rc.local 
+printf '%s\n' '#!/bin/bash'  | tee -a /etc/rc.local 1>/dev/null
+echo "sysctl -w net.ipv6.conf.all.disable_ipv6=1" >>/etc/rc.local
+echo "sysctl -w net.ipv6.conf.default.disable_ipv6=1" >> /etc/rc.local
+echo "sysctl vm.swappiness=0" >> /etc/rc.local
+echo "exit 0" >> /etc/rc.local
+chmod 755 /etc/rc.local
+## need like autoexe bat on startup
+echo "[Unit]" > /etc/systemd/system/rc-local.service
+echo " Description=/etc/rc.local Compatibility" >> /etc/systemd/system/rc-local.service
+echo " ConditionPathExists=/etc/rc.local" >> /etc/systemd/system/rc-local.service
+echo "" >> /etc/systemd/system/rc-local.service
+echo "[Service]" >> /etc/systemd/system/rc-local.service
+echo " Type=forking" >> /etc/systemd/system/rc-local.service
+echo " ExecStart=/etc/rc.local start" >> /etc/systemd/system/rc-local.service
+echo " TimeoutSec=0" >> /etc/systemd/system/rc-local.service
+echo " StandardOutput=tty" >> /etc/systemd/system/rc-local.service
+echo " RemainAfterExit=yes" >> /etc/systemd/system/rc-local.service
+## featured Removed
+###echo " SysVStartPriority=99" >> /etc/systemd/system/rc-local.service
+echo "" >> /etc/systemd/system/rc-local.service
+echo "[Install]" >> /etc/systemd/system/rc-local.service
+echo " WantedBy=multi-user.target" >> /etc/systemd/system/rc-local.service
+
+systemctl enable rc-local
+systemctl start rc-local
+
+## make cpan auto yes for pre-requist modules of perl
+(echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan 1>/dev/null
+
+
+##disable this program as not needed
+systemctl stop ModemManager 1>/dev/null 2>/dev/null
+systemctl disable ModemManager 1>/dev/null 2>/dev/null
+systemctl stop wpa_supplicant 1>/dev/null 2>/dev/null
+systemctl disable wpa_supplicant 1>/dev/null 2>/dev/null
+
+# use only for heavy load server via Service or use nginx 
+systemctl stop imapproxy.service 2>/dev/null
+systemctl disable imapproxy.service 2>/dev/null
+
+ed -i "s/#RateLimitIntervalSec=30s/RateLimitIntervalSec=0/"  /etc/systemd/journald.conf
+sed -i "s/#RateLimitBurst=10000/RateLimitBurst=0/"  /etc/systemd/journald.conf
+systemctl restart systemd-journald
 
 #Disable vim automatic visual mode using mouse
 echo "\"set mouse=a/g" >  ~/.vimrc
@@ -85,6 +135,21 @@ a2enmod actions > /dev/null 2>&1
 a2enmod include > /dev/null 2>&1
 a2enmod headers > /dev/null 2>&1
 a2enmod proxy_http > /dev/null 2>&1
+
+
+### changing timezone to Asia Kolkata
+sed -i "s/;date.timezone =/date\.timezone \= \'Asia\/Kolkata\'/" /etc/php/8.2/apache2/php.ini
+sed -i "s/;date.timezone =/date\.timezone \= \'Asia\/Kolkata\'/" /etc/php/8.2/cli/php.ini
+sed -i "s/;date.timezone =/date\.timezone \= \'Asia\/Kolkata\'/" /etc/php/8.2/fpm/php.ini
+##disable error
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ERROR/" /etc/php/8.2/cli/php.ini
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ERROR/" /etc/php/8.2/fpm/php.ini
+sed -i "s/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ERROR/" /etc/php/8.2/apache2/php.ini
+#some more tunning..
+sed -i "s/memory_limit = 128M/memory_limit = 512M/" /etc/php/8.2/apache2/php.ini
+sed -i "s/post_max_size = 100M/post_max_size = 800M/" /etc/php/8.2/apache2/php.ini
+sed -i "s/upload_max_filesize = 2M/upload_max_filesize = 500M/" /etc/php/8.2/apache2/php.ini
+
 
 systemctl stop apache2
 
