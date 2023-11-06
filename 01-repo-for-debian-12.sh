@@ -21,11 +21,7 @@ echo "deb-src http://security.debian.org/debian-security bookworm-security main 
 echo "deb http://deb.debian.org/debian/ bookworm-updates main non-free-firmware contrib non-free" >> /etc/apt/sources.list
 echo "deb-src http://deb.debian.org/debian/ bookworm-updates main non-free-firmware contrib non-free" >> /etc/apt/sources.list
 
-## set to India IST timezone -- You can dissable it if needed
-timedatectl set-timezone 'Asia/Kolkata'
 
-#export LC_CTYPE=en_US.UTF-8
-#export LC_ALL=en_US.UTF-8
 
 
 apt update
@@ -91,6 +87,7 @@ a2enmod proxy_http > /dev/null 2>&1
 
 systemctl stop apache2
 
+systemctl restart apache2
 
 
 # Reset

@@ -14,3 +14,4 @@ chown -R www-data:www-data /var/www/html/dbadminonweb
 
 sed -i "s/\$cfg\['blowfish_secret'\] = '';/\$cfg\['blowfish_secret'\] = '`pwgen -c 32 1`';/" /var/www/html/dbadminonweb/config.inc.php
 
+systemctl restart apache2
