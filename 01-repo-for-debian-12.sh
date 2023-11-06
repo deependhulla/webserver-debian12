@@ -41,7 +41,7 @@ DEBIAN_FRONTEND=noninteractive
 ## install insstead of systemd-timesyncd for better time sync
 apt -y install vim chrony openssh-server screen net-tools git mc postfix sendemail  \
 sudo wget curl ethtool iptraf-ng traceroute telnet mariadb-server pwgen certbot \
-arping dnsutils dos2unix ethtool sudo iptables postfix iptables-persistent python3-certbot \
+arping dnsutils make cmake dos2unix ethtool sudo iptables postfix iptables-persistent python3-certbot \
 build-essential rsyslog gnupg2 zip rar unrar catdoc unzip tar imagemagick ftp python3-certbot-apache \
 poppler-utils tnef whois rsync automysqlbackup apache2 imagemagick cifs-utils \
 libnet-dns-perl libmailtools-perl php-mail-mime libapache2-mod-php php-common php-redis \
@@ -98,7 +98,7 @@ systemctl disable wpa_supplicant 1>/dev/null 2>/dev/null
 systemctl stop imapproxy.service 2>/dev/null
 systemctl disable imapproxy.service 2>/dev/null
 
-ed -i "s/#RateLimitIntervalSec=30s/RateLimitIntervalSec=0/"  /etc/systemd/journald.conf
+sed -i "s/#RateLimitIntervalSec=30s/RateLimitIntervalSec=0/"  /etc/systemd/journald.conf
 sed -i "s/#RateLimitBurst=10000/RateLimitBurst=0/"  /etc/systemd/journald.conf
 systemctl restart systemd-journald
 
